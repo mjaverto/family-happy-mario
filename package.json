@@ -1,0 +1,16 @@
+{
+  "name": "family-happy-mario",
+  "version": "1.0.0",
+  "description": "Family Happy Mario — a Dunmore football-themed platformer",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "node scripts/check-syntax.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "globals": "^15.14.0"
+  }
+}
