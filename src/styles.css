@@ -1,0 +1,99 @@
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+  width: 100%; height: 100%; overflow: hidden; background: #87ceeb;
+  font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+  user-select: none; -webkit-user-select: none; touch-action: none;
+}
+#game { display: block; width: 100vw; height: 100vh; image-rendering: pixelated; }
+
+/* -------- character select -------- */
+#select {
+  position: fixed; inset: 0; z-index: 5;
+  background: linear-gradient(180deg, #87ceeb 0%, #c8e8ec 60%, #b9e38b 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px; padding: 20px;
+}
+#select h1 {
+  font-size: clamp(26px, 6vw, 48px);
+  color: #2d4a3e; text-shadow: 3px 3px 0 #fff; text-align: center;
+}
+#select p { color: #2d4a3e; font-weight: 700; font-size: clamp(14px, 3vw, 20px); text-align: center; }
+  #select .chars {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; max-width: min(720px, 82vw); width: 100%;
+  }
+#select .chars button {
+  background: #fff; border: 4px solid #2d4a3e; border-radius: 18px;
+  padding: 16px 10px; font-size: clamp(14px, 3vw, 20px); font-weight: 700; color: #2d4a3e;
+  cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  box-shadow: 0 4px 0 #2d4a3e; transition: transform 60ms;
+}
+#select .chars button:active { transform: translateY(2px); box-shadow: 0 2px 0 #2d4a3e; }
+#select .chars .emoji { font-size: clamp(40px, 10vw, 64px); line-height: 1; }
+#instructions {
+  background: rgba(255,255,255,0.88); border: 3px solid #2d4a3e; border-radius: 14px;
+  padding: 12px 18px; max-width: min(720px, 90vw); text-align: center;
+}
+#instructions p { font-size: clamp(12px, 2.6vw, 16px); margin: 4px 0; }
+
+/* -------- HUD (hidden until playing) -------- */
+#hud { display: none; }
+body.playing #hud { display: flex; }
+
+#hud {
+  position: fixed; top: 10px; left: 10px; right: 10px;
+  flex-direction: row; justify-content: space-between; gap: 6px;
+  pointer-events: none; z-index: 2; flex-wrap: wrap;
+}
+.pill {
+  background: rgba(255,255,255,0.9); border: 3px solid #2d4a3e; border-radius: 12px;
+  padding: 6px 12px; font-weight: 700; color: #2d4a3e; font-size: 14px;
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+}
+
+/* -------- touch controls -------- */
+#touch { position: fixed; inset: 0; pointer-events: none; z-index: 3; }
+body.playing.touch #touch > * { pointer-events: auto; }
+#dpad, #actions { display: none; }
+body.playing.touch #dpad { display: flex; }
+body.playing.touch #actions { display: flex; }
+
+#dpad {
+  position: fixed; left: 14px; bottom: 14px;
+  flex-direction: row; gap: 10px;
+}
+#actions {
+  position: fixed; right: 14px; bottom: 14px;
+  flex-direction: row; gap: 10px;
+}
+#dpad button, #actions button {
+  background: rgba(255,255,255,0.88); border: 3px solid #2d4a3e; border-radius: 50%;
+  font-weight: 800; color: #2d4a3e; cursor: pointer;
+  width: 72px; height: 72px; font-size: 28px;
+  display: flex; align-items: center; justify-content: center;
+}
+#dpad button:active, #actions button:active { background: #ffd700; }
+#actions .jump { background: #ffcf66; width: 86px; height: 86px; font-size: 34px; }
+
+/* -------- modals -------- */
+#win, #lose, #advance {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+  display: none; align-items: center; justify-content: center; z-index: 10;
+}
+#win.on, #lose.on, #advance.on { display: flex; }
+#win .card, #lose .card, #advance .card {
+  background: #fffacd; border: 6px solid #ffd700; border-radius: 24px;
+  padding: 28px 32px; text-align: center; max-width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: pop 0.35s cubic-bezier(.2,1.6,.4,1) both;
+}
+#lose .card { border-color: #ff6b6b; background: #ffe0e0; }
+@keyframes pop { 0%{transform:scale(0.6)} 100%{transform:scale(1)} }
+#win h2, #lose h2, #advance h2 { font-size: clamp(32px, 7vw, 56px); color: #8b4513; margin-bottom: 8px; }
+#lose h2 { color: #a03030; }
+#win p, #lose p, #advance p { font-size: clamp(16px, 3vw, 20px); color: #2d4a3e; margin-bottom: 18px; }
+#win button, #lose button, #advance button {
+  background: #2d4a3e; color: #fff; border: none; border-radius: 12px;
+  padding: 12px 24px; font-size: 17px; font-weight: 800; cursor: pointer;
+  box-shadow: 0 3px 0 #1a2f25;
+}
+#win button:active, #lose button:active, #advance button:active { transform: translateY(2px); box-shadow: 0 1px 0 #1a2f25; }

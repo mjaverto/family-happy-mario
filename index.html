@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Family Happy Mario</title>
+<link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+
+<canvas id="game"></canvas>
+
+<div id="select">
+  <h1>Family Happy Mario</h1>
+  <p>Pick who you want to play:</p>
+  <div class="chars">
+    <button data-char="aiden"><span class="emoji">🧒</span><span>Aiden</span></button>
+    <button data-char="dean"><span class="emoji">👦</span><span>Dean</span></button>
+    <button data-char="jake"><span class="emoji">👦</span><span>Jake</span></button>
+    <button data-char="kash"><span class="emoji">👦</span><span>Kash</span></button>
+    <button data-char="riggs"><span class="emoji">👦</span><span>Riggs</span></button>
+  </div>
+  <div id="instructions">
+    <p><strong>Arrows / WASD</strong> move · <strong>Space or Up</strong> to jump</p>
+    <p>Jump on spiders 🕷️ and duck heads 🦆 to defeat them. Grab coins 🪙 and finish each level.</p>
+  </div>
+</div>
+
+  <div id="hud">
+    <div class="pill" id="who"></div>
+    <div class="pill" id="level">Level 1 / 2</div>
+    <div class="pill" id="coins">🪙 <span id="coinCount">0</span></div>
+    <div class="pill" id="lives">❤️ <span id="lifeCount">3</span></div>
+  </div>
+
+<div id="touch">
+  <div id="dpad">
+    <button class="left"  data-dir="left">◀</button>
+    <button class="right" data-dir="right">▶</button>
+  </div>
+  <div id="actions">
+    <button class="jump" data-dir="up">▲</button>
+  </div>
+</div>
+
+<div id="win">
+  <div class="card">
+    <h2 id="winTitle">🎉 You Win! 🚩</h2>
+    <p id="winStats">Great job! You reached the flag.</p>
+    <button id="winClose">Play Again</button>
+  </div>
+</div>
+
+<div id="advance">
+  <div class="card">
+    <h2 id="advanceTitle">Level Complete</h2>
+    <p id="advanceBody">Advance to the next level.</p>
+    <button id="advanceClose">Continue</button>
+  </div>
+</div>
+
+<div id="lose">
+  <div class="card">
+    <h2>💥 Game Over</h2>
+    <p>Want to try again?</p>
+    <button id="loseClose">Restart</button>
+  </div>
+</div>
+
+<script src="src/constants.js"></script>
+<script src="src/level.js"></script>
+<script src="src/entities.js"></script>
+<script src="src/physics.js"></script>
+<script src="src/input.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/render.js"></script>
+<script src="src/ui.js"></script>
+<script src="src/main.js"></script>
+</body>
+</html>
