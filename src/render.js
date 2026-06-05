@@ -8,6 +8,7 @@ window.AM = window.AM || {};
   function init() {
     canvas = document.getElementById("game");
     ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
     resize();
     window.addEventListener("resize", resize);
   }
@@ -191,30 +192,60 @@ window.AM = window.AM || {};
       var w = end.w * level.tile;
       var h = end.h * level.tile;
 
-      // Boss truck.
+      // Draw stylized boss truck.
+      var tx = px + w * 0.5;
+      var truckY = py + h - 9;
       ctx.fillStyle = AM.C.BOSS.truckColor;
-      ctx.fillRect(px + w * 0.5, py + h - 4, 70, 26);
-      ctx.fillRect(px + w * 0.5 - 6, py + h - 10, 60, 12);
-      ctx.fillStyle = "#222";
-      ctx.fillRect(px + w * 0.5 - 2, py + h - 1, 18, 12);
-      ctx.fillRect(px + 34, py + h - 1, 24, 12);
+      ctx.fillRect(tx, truckY - 28, 84, 20);
+      ctx.fillRect(tx + 4, truckY - 36, 58, 16);
+      ctx.fillStyle = AM.C.COLOR_OUTLINE;
+      ctx.fillRect(tx + 2, truckY - 20, 84, 2);
+      ctx.fillStyle = AM.C.BOSS.windowColor;
+      ctx.fillRect(tx + 44, truckY - 34, 12, 12);
+      ctx.fillRect(tx + 60, truckY - 34, 12, 12);
 
+      // rear / front wheels
       ctx.fillStyle = AM.C.COLOR_OUTLINE;
       ctx.beginPath();
-      ctx.arc(px + 10, py + h + 8, 7, 0, Math.PI * 2);
-      ctx.arc(px + 52, py + h + 8, 7, 0, Math.PI * 2);
+      ctx.arc(tx + 14, truckY, 9, 0, Math.PI * 2);
+      ctx.arc(tx + 72, truckY, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#d0d0d0";
+      ctx.beginPath();
+      ctx.arc(tx + 14, truckY, 4, 0, Math.PI * 2);
+      ctx.arc(tx + 72, truckY, 4, 0, Math.PI * 2);
       ctx.fill();
 
-      // Uncle Brian.
-      ctx.fillStyle = "#fff";
-      ctx.font = "20px -apple-system, system-ui, 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(AM.C.BOSS.vehicle, px + 40, py + h + 0);
-      ctx.fillText(AM.C.BOSS.emoji, px + 12, py + h - 20);
+      // Boss character (Uncle Brian) standing near truck front.
+      var bx = tx - 28;
+      var by = truckY - 36;
+      ctx.fillStyle = AM.C.BOSS.jacket;
+      ctx.fillRect(bx, by, 18, 12);
+      ctx.fillStyle = AM.C.BOSS.shirt;
+      ctx.fillRect(bx + 2, by + 12, 14, 8);
 
+      ctx.fillStyle = AM.C.BOSS.skin;
+      ctx.beginPath();
+      ctx.arc(bx + 9, by - 8, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = AM.C.COLOR_OUTLINE;
+      ctx.beginPath();
+      ctx.arc(bx + 6, by - 7, 1.6, 0, Math.PI * 2);
+      ctx.arc(bx + 12, by - 7, 1.6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = AM.C.BOSS.shirt;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(bx + 9, by - 4, 3, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // label on boss
       ctx.font = "bold 11px -apple-system, system-ui, sans-serif";
-      ctx.fillText(AM.C.BOSS.name + " — " + AM.C.BOSS.truckLabel, px + 40, py + h - 38);
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "rgba(255,255,255,0.96)";
+      ctx.fillText(AM.C.BOSS.name, tx - 18, py + h - 44);
+      ctx.fillText(AM.C.BOSS.truckLabel, tx - 18, py + h - 30);
     }
   }
 
@@ -263,30 +294,180 @@ window.AM = window.AM || {};
     }
   }
 
-  function drawEmoji(emoji, px, py, size) {
-    ctx.font = size + "px -apple-system, system-ui, 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(emoji, px, py);
+  function drawKidSprite(cfg, px, py, facing, t, deadMode) {
+    cfg = cfg || {};
+    cfg.palette = cfg.palette || {};
+    var shirt = cfg.palette.shirt || "#2f6de0";
+    var shorts = cfg.palette.shorts || "#112c5a";
+    var skin = cfg.palette.skin || "#f2be84";
+    var shoe = cfg.palette.shoe || "#2c2417";
+    var hair = cfg.palette.hair || "#553722";
+    var cap = cfg.palette.cap || shirt;
+    var outline = cfg.palette.outline || "#1d1d1d";
+    t = t || 0;
+
+    if (facing === 0) facing = 1;
+    var bob = Math.sin(t * 14 + px) * 0.45;
+
+    if (deadMode) {
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.fillStyle = "#f4d7c1";
+      ctx.beginPath();
+      ctx.ellipse(0, 4, 7, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      return;
+    }
+
+    function block(x, y, w, h, color) {
+      if (!color) return;
+      ctx.fillStyle = color;
+      ctx.fillRect((x) * 2, (y) * 2, (w) * 2, (h) * 2);
+    }
+
+    ctx.save();
+    ctx.translate(px, py);
+    if (facing < 0) {
+      ctx.scale(-1, 1);
+    }
+
+    // Mario-like block sprite silhouette.
+    var x = -7;
+    var y = -24;
+
+    block(x + 1, y + 1, 12, 2, hair);
+    block(x + 3, y + 1, 8, 2, cap);
+    block(x + 2, y + 3, 10, 2, hair);
+    block(x + 2, y + 4, 10, 1, outline);
+
+    block(x + 2, y + 5, 10, 8, skin);
+    block(x + 3, y + 5, 1, 1, "#fff");
+    block(x + 10, y + 5, 1, 1, "#fff");
+    block(x + 4, y + 6, 1, 1, outline);
+    block(x + 9, y + 6, 1, 1, outline);
+    block(x + 4, y + 7, 2, 1, outline);
+    block(x + 8, y + 7, 2, 1, outline);
+
+    block(x + 2, y + 13, 10, 9, shirt);
+    block(x + 2, y + 22, 10, 4, shorts);
+
+    block(x + 1, y + 21, 4, 3, shoe);
+    block(x + 9, y + 21, 4, 3, shoe);
+    block(x + 0, y + 24, 2, 2, outline);
+    block(x + 12, y + 24, 2, 2, outline);
+    block(x + 1, y + 26, 4, 2, shoe);
+    block(x + 9, y + 26, 4, 2, shoe);
+
+    block(x + 0, y + 13, 2, 7, shirt);
+    block(x + 12, y + 13, 2, 7, shirt);
+    block(x + 0, y + 12 + bob, 1, 2, outline);
+    block(x + 13, y + 12 - bob, 1, 2, outline);
+
+    block(x + 2, y + 18, 2, 1, outline);
+    block(x + 10, y + 18, 2, 1, outline);
+    ctx.restore();
+  }
+
+  function drawDuckHead(x, y) {
+    ctx.fillStyle = AM.C.ENEMY_TYPES.duck;
+    ctx.beginPath();
+    ctx.arc(x, y, 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = AM.C.BOSS.jacket;
+    ctx.beginPath();
+    ctx.moveTo(x - 4, y + 1);
+    ctx.lineTo(x + 5, y);
+    ctx.lineTo(x - 4, y + 5);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = AM.C.ENEMY_TYPES.duckEyes;
+    ctx.beginPath();
+    ctx.arc(x - 2, y - 2, 1.3, 0, Math.PI * 2);
+    ctx.arc(x + 2, y - 2, 1.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(x - 3.5, y - 0.7, 2, 1.2);
+    ctx.fillRect(x + 1.5, y - 0.7, 2, 1.2);
+  }
+
+  function drawMascot(px, py) {
+    // Buck mascot from Dunmore mascot theme.
+    ctx.fillStyle = "#5b8e45";
+    ctx.beginPath();
+    ctx.roundRect(px - 7, py - 10, 14, 16, 4);
+    ctx.fill();
+    ctx.fillStyle = "#7a5a38";
+    ctx.beginPath();
+    ctx.arc(px, py - 14, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.beginPath();
+    ctx.ellipse(px - 2, py - 10, 1.5, 2.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(px + 2, py - 10, 1.5, 2.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#2d4a3e";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(px - 7, py - 4);
+    ctx.lineTo(px - 12, py - 9);
+    ctx.moveTo(px + 7, py - 4);
+    ctx.lineTo(px + 12, py - 8);
+    ctx.stroke();
   }
 
   function drawEnemy(e) {
     var px = e.x - camera.x + e.w / 2;
     var py = e.y - camera.y + e.h / 2;
     if (!e.alive) {
-      var emoji = AM.C.ENEMY_TYPES.spider;
       ctx.save();
-      ctx.translate(px, py + e.h * 0.3);
-      ctx.scale(1.25, 0.35);
-      drawEmoji(emoji, 0, 0, 30);
+      ctx.translate(px, py + 12);
+      ctx.scale(1.2, 0.35);
+      ctx.fillStyle = AM.C.ENEMY_TYPES.web;
+      ctx.beginPath();
+      ctx.arc(0, 0, 10, 0, Math.PI * 2);
+      ctx.fill();
       ctx.restore();
       return;
     }
 
     var bob = Math.sin(Date.now() / 140 + e.x * 0.03) * 2;
-    drawEmoji(AM.C.ENEMY_TYPES.spider, px, py + bob, 28);
-    // Duck head motif: the spiders have duck heads.
-    drawEmoji(AM.C.ENEMY_TYPES.duck, px, py - 16 + bob, 16);
+    // classic block-style spider shell
+    var s = 2;
+    function enemyBlock(x, y, w, h, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect((px + x * s - 18), (py + bob + 6 + y * s) - 3, w * s, h * s);
+    }
+
+    enemyBlock(-6, 0, 12, 6, AM.C.ENEMY_TYPES.body);
+    enemyBlock(-5, 6, 10, 2, AM.C.ENEMY_TYPES.web);
+    enemyBlock(-2, -1, 4, 1, AM.C.COLOR_OUTLINE);
+    // spider legs
+    ctx.strokeStyle = AM.C.ENEMY_TYPES.web;
+    ctx.lineWidth = 2;
+    for (var leg = 0; leg < 6; leg++) {
+      var ang = (Math.PI / 6) * leg - Math.PI / 2;
+      var lx1 = Math.cos(ang) * 7;
+      var ly1 = Math.sin(ang) * 4;
+      var lx2 = Math.cos(ang) * 14;
+      var ly2 = Math.sin(ang) * 10;
+      ctx.beginPath();
+      ctx.moveTo(px, py + bob + 6);
+      ctx.quadraticCurveTo(px + lx1, py + bob + 6 + ly1, px + lx2, py + bob + ly2 + 4);
+      ctx.stroke();
+    }
+
+    // Duck head motif.
+    drawDuckHead(px, py + bob - 8);
+
+    // eyes on body
+    ctx.fillStyle = AM.C.ENEMY_TYPES.eyes;
+    ctx.beginPath();
+    ctx.arc(px - 2, py + bob + 4, 1.2, 0, Math.PI * 2);
+    ctx.arc(px + 2, py + bob + 4, 1.2, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   function drawPlayer(p) {
@@ -296,8 +477,7 @@ window.AM = window.AM || {};
       ctx.save();
       ctx.translate(px, py);
       ctx.rotate(p.deathTimer * 6);
-      var em = (AM.C.CHARS[p.char] || {}).emoji || "👦";
-      drawEmoji(em, 0, 0, 30);
+      drawKidSprite(AM.C.CHARS[p.char] || AM.C.CHARS.aiden, 0, -6, p.facing || 1, p.vy || 0, true);
       ctx.restore();
       return;
     }
@@ -306,27 +486,24 @@ window.AM = window.AM || {};
     var px2 = p.x - camera.x + p.w / 2;
     var py2 = p.y - camera.y + p.h / 2;
     if (p.invuln > 0 && Math.floor(p.invuln * 10) % 2 === 0) return;
-    var emChar = (AM.C.CHARS[p.char] || {}).emoji || "👦";
-
-    ctx.save();
-    if (p.facing < 0) {
-      ctx.translate(px2, py2);
-      ctx.scale(-1, 1);
-      drawEmoji(emChar, 0, 0, 30);
-    } else {
-      drawEmoji(emChar, px2, py2, 30);
-    }
-    ctx.restore();
+    drawKidSprite(AM.C.CHARS[p.char] || AM.C.CHARS.aiden, px2, py2, p.facing || 1, p.invuln + 0.1, false);
   }
 
   function drawCheckpoints(level) {
     var T = level.tile;
     for (var i = 0; i < level.checkpoints.length; i++) {
       var cp = level.checkpoints[i];
-      if (!cp.emoji) continue;
+      if (cp.who === "start") continue;
       var px = cp.x * T + T / 2 - camera.x;
       var py = cp.y * T + T / 2 - camera.y;
-      drawEmoji(cp.emoji, px, py, 28);
+
+      var charData = AM.C.CHARS[cp.who] || {};
+      var marker = charData.palette || {};
+      ctx.fillStyle = marker.shirt || "#fff";
+      ctx.beginPath();
+      ctx.arc(px, py, 12, 0, Math.PI * 2);
+      ctx.fill();
+      drawKidSprite(charData, px, py + 4, 1, 0, false);
 
       var label = cp.label || "";
       if (!label) continue;
@@ -352,23 +529,23 @@ window.AM = window.AM || {};
       var c = level.cameos[i];
       var px = c.x * T + T / 2 - camera.x;
       var py = c.y * T + T / 2 - camera.y + Math.sin(Date.now() / 400 + c.x) * 2;
-      drawEmoji(c.emoji, px, py, 30);
+      drawMascot(px, py);
     }
 
-    // Buck mascots from level-specific placements.
-    if (!level.mascots) return;
-    for (var j = 0; j < level.mascots.length; j++) {
-      var m = level.mascots[j];
-      var bx = m.x * T - camera.x;
-      var by = m.y * T + T / 2 - camera.y;
-      drawEmoji("🦬", bx + T / 2, by, 24);
-      if (m.side < 0) {
-        drawEmoji("🦬", bx + T / 2 - 16, by, 12);
-      } else {
-        drawEmoji("🦬", bx + T / 2 + 16, by, 12);
+      // Buck mascots from level-specific placements.
+      if (!level.mascots) return;
+      for (var j = 0; j < level.mascots.length; j++) {
+        var m = level.mascots[j];
+        var bx = m.x * T - camera.x;
+        var by = m.y * T + T / 2 - camera.y;
+        drawMascot(bx + T / 2, by);
+        if (m.side < 0) {
+          drawMascot(bx + T / 2 - 16, by - 3);
+        } else {
+          drawMascot(bx + T / 2 + 16, by - 3);
+        }
       }
     }
-  }
 
   // Polyfill for roundRect in older browsers.
   if (!CanvasRenderingContext2D.prototype.roundRect) {

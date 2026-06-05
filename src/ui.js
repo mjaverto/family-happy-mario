@@ -43,8 +43,6 @@ window.AM = window.AM || {};
   function setWho(character) {
     if (!whoEl) return;
     var data = AM.C.CHARS[character] || {};
-    var em = data.emoji || "👦";
-
     var age = typeof data.age === "number" ? data.age : null;
     var ageLabel = "";
     if (age !== null) {
@@ -58,7 +56,7 @@ window.AM = window.AM || {};
     if (ageLabel) {
       suffix = ageLabel + " · " + (data.hair || "");
     }
-    whoEl.textContent = em + " " + (data.name || character) + (suffix ? " (" + suffix + ")" : "");
+    whoEl.textContent = (data.name || character) + (suffix ? " (" + suffix + ")" : "");
   }
 
   function setLevel(n) {
