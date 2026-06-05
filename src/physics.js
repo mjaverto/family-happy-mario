@@ -48,6 +48,9 @@ window.AM = window.AM || {};
   }
 
   function stepPlayer(player, input, dt, solids) {
+    player.prevY = player.y;
+    player.prevVy = player.vy;
+
     // Horizontal acceleration / deceleration
     var accel = AM.C.RUN_ACCEL * (player.onGround ? 1 : AM.C.AIR_CONTROL);
     var decel = AM.C.RUN_DECEL * (player.onGround ? 1 : AM.C.AIR_CONTROL * 0.6);

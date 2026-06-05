@@ -141,9 +141,14 @@ window.AM = window.AM || {};
       if (!e.alive) continue;
       if (!AM.physics.rectsOverlap(p, e)) continue;
 
-      var playerFeet = p.y + p.h;
+      var playerPrevBottom = p.prevY + p.h;
+      var playerBottom = p.y + p.h;
+      var enemyTop = e.y;
       var enemyMid = e.y + e.h * 0.5;
-      if (p.vy > 40 && playerFeet < enemyMid + 10) {
+      var wasAbove = playerPrevBottom <= enemyTop + 6;
+      var falling = p.vy > 20 && p.prevVy >= 0;
+
+      if (falling && wasAbove && playerBottom >= enemyTop && playerBottom < enemyMid + 4) {
         e.alive = false;
         e.squishTimer = 0.4;
         e.vx = 0;

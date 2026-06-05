@@ -3,14 +3,14 @@ window.AM = window.AM || {};
 
 AM.C = {
   TILE: 32,
-  GRAVITY: 1650,     // px/s^2
-  JUMP_V: -610,      // px/s (negative = up)
-  MAX_FALL: 980,     // terminal velocity
-  RUN_ACCEL: 1500,   // px/s^2
-  RUN_DECEL: 1800,   // px/s^2
-  RUN_MAX: 240,      // px/s
-  AIR_CONTROL: 0.7,  // accel multiplier in air
-  STOMP_BOUNCE: -390,
+  GRAVITY: 1420,     // px/s^2
+  JUMP_V: -700,      // px/s (negative = up)
+  MAX_FALL: 930,     // terminal velocity
+  RUN_ACCEL: 1250,   // px/s^2
+  RUN_DECEL: 1500,   // px/s^2
+  RUN_MAX: 250,      // px/s
+  AIR_CONTROL: 0.82,  // accel multiplier in air
+  STOMP_BOUNCE: -430,
   ENEMY_SPEED: 64,
   COIN_SCORE: 1,
   START_LIVES: 3,
@@ -33,14 +33,14 @@ AM.C = {
   COLOR_BRICK_LINE: "#6b3e1f",
   COLOR_FLAG_POLE: "#e9f7ff",
   COLOR_FLAG: "#ffcc00",
-  COLOR_OUTLINE: "#18372b",
+  COLOR_OUTLINE: "#1f1f1f",
 
   ENEMY_TYPES: {
-    body: "#3a3a3a",
+    body: "#4b4b4b",
     web: "#2b2b2b",
-    eyes: "#f6ff00",
-    duck: "#f5cf57",
-    duckBeak: "#f39d1a",
+    eyes: "#191919",
+    duck: "#e8c63c",
+    duckBeak: "#d6861a",
     duckEyes: "#1f1f1f",
   },
 

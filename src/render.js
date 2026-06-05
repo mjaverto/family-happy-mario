@@ -307,90 +307,145 @@ window.AM = window.AM || {};
     t = t || 0;
 
     if (facing === 0) facing = 1;
-    var bob = Math.sin(t * 14 + px) * 0.45;
+    var bob = (Math.sin(t * 12 + px * 0.04) > 0 ? 1 : 0);
+    var frame = Math.abs(Math.sin(t * 16 + px * 0.03)) > 0.2 ? 1 : 0;
 
     if (deadMode) {
       ctx.save();
-      ctx.translate(px, py);
-      ctx.fillStyle = "#f4d7c1";
-      ctx.beginPath();
-      ctx.ellipse(0, 4, 7, 2, 0, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.translate(px, py + 6);
+      ctx.fillStyle = outline;
+      ctx.fillRect(-8, 8, 16, 2);
+      ctx.fillStyle = shirt;
+      ctx.fillRect(-5, 9, 2, 2);
+      ctx.fillRect(3, 9, 2, 2);
       ctx.restore();
       return;
     }
 
-    function block(x, y, w, h, color) {
+    function pset(x, y, w, h, color) {
       if (!color) return;
       ctx.fillStyle = color;
-      ctx.fillRect((x) * 2, (y) * 2, (w) * 2, (h) * 2);
+      ctx.fillRect(x, y, w, h);
+    }
+
+    function gridBlock(x, y, w, h, color, unit) {
+      pset((x) * unit, (y) * unit, (w) * unit, (h) * unit, color);
     }
 
     ctx.save();
     ctx.translate(px, py);
+    ctx.scale(2, 2);
     if (facing < 0) {
       ctx.scale(-1, 1);
     }
 
-    // Mario-like block sprite silhouette.
-    var x = -7;
-    var y = -24;
+    // Mario Bros. style 16x16 silhouette in pixel blocks.
+    var u = 1;
+    var x0 = -8;
+    var y0 = frame ? -14 : -14;
+    if (frame === 1) y0 -= 0.5;
 
-    block(x + 1, y + 1, 12, 2, hair);
-    block(x + 3, y + 1, 8, 2, cap);
-    block(x + 2, y + 3, 10, 2, hair);
-    block(x + 2, y + 4, 10, 1, outline);
+    // Head + hat.
+    gridBlock(x0 + 4, y0 + 0, 2, 2, outline, u);
+    gridBlock(x0 + 3, y0 + 0, 8, 1, outline, u);
+    gridBlock(x0 + 2, y0 + 1, 10, 1, outline, u);
+    gridBlock(x0 + 1, y0 + 2, 12, 1, cap, u);
+    gridBlock(x0 + 2, y0 + 3, 10, 1, cap, u);
+    gridBlock(x0 + 3, y0 + 4, 8, 1, hair, u);
 
-    block(x + 2, y + 5, 10, 8, skin);
-    block(x + 3, y + 5, 1, 1, "#fff");
-    block(x + 10, y + 5, 1, 1, "#fff");
-    block(x + 4, y + 6, 1, 1, outline);
-    block(x + 9, y + 6, 1, 1, outline);
-    block(x + 4, y + 7, 2, 1, outline);
-    block(x + 8, y + 7, 2, 1, outline);
+    // Face.
+    gridBlock(x0 + 3, y0 + 5, 1, 1, skin, u);
+    gridBlock(x0 + 4, y0 + 5, 6, 4, skin, u);
+    gridBlock(x0 + 10, y0 + 5, 1, 1, skin, u);
+    pset(x0 + 5 * u, y0 + 6 * u, u, u, outline);
+    pset(x0 + 9 * u, y0 + 6 * u, u, u, outline);
 
-    block(x + 2, y + 13, 10, 9, shirt);
-    block(x + 2, y + 22, 10, 4, shorts);
+    // Eye highlights.
+    pset(x0 + 5.25 * u, y0 + 6.25 * u, 0.5 * u, 0.5 * u, "#fff");
+    pset(x0 + 9.25 * u, y0 + 6.25 * u, 0.5 * u, 0.5 * u, "#fff");
 
-    block(x + 1, y + 21, 4, 3, shoe);
-    block(x + 9, y + 21, 4, 3, shoe);
-    block(x + 0, y + 24, 2, 2, outline);
-    block(x + 12, y + 24, 2, 2, outline);
-    block(x + 1, y + 26, 4, 2, shoe);
-    block(x + 9, y + 26, 4, 2, shoe);
+    // Torso (overalls + shirt contrast).
+    gridBlock(x0 + 2, y0 + 9, 10, 1, shirt, u);
+    gridBlock(x0 + 2, y0 + 10, 10, 6, shorts, u);
+    gridBlock(x0 + 1, y0 + 10, 1, 6, shirt, u);
+    gridBlock(x0 + 12, y0 + 10, 1, 6, shirt, u);
+    gridBlock(x0 + 5, y0 + 9, 2, 1, skin, u);
+    gridBlock(x0 + 9, y0 + 9, 2, 1, skin, u);
 
-    block(x + 0, y + 13, 2, 7, shirt);
-    block(x + 12, y + 13, 2, 7, shirt);
-    block(x + 0, y + 12 + bob, 1, 2, outline);
-    block(x + 13, y + 12 - bob, 1, 2, outline);
+    // Arms.
+    gridBlock(x0 + 0, y0 + 10 + bob, 1, 5, shirt, u);
+    gridBlock(x0 + 13, y0 + 10 - bob, 1, 5, shirt, u);
 
-    block(x + 2, y + 18, 2, 1, outline);
-    block(x + 10, y + 18, 2, 1, outline);
+    // Legs and shoes.
+    gridBlock(x0 + 3, y0 + 15, 3, 2, shorts, u);
+    gridBlock(x0 + 9, y0 + 15, 3, 2, shorts, u);
+    gridBlock(x0 + 2, y0 + 17, 5, 2, shoe, u);
+    gridBlock(x0 + 9, y0 + 17, 5, 2, shoe, u);
+    gridBlock(x0 + 1, y0 + 16, 1, 2, outline, u);
+    gridBlock(x0 + 14, y0 + 16, 1, 2, outline, u);
+
+    // Boot tread separation.
+    gridBlock(x0 + 3, y0 + 18, 1, 1, outline, u);
+    gridBlock(x0 + 11, y0 + 18, 1, 1, outline, u);
     ctx.restore();
   }
 
-  function drawDuckHead(x, y) {
-    ctx.fillStyle = AM.C.ENEMY_TYPES.duck;
-    ctx.beginPath();
-    ctx.arc(x, y, 8, 0, Math.PI * 2);
-    ctx.fill();
+  function drawDuckSpiderSprite(px, py, facing, t) {
+    var s = 1;
+    var bob = Math.sin(t * 10 + px * 0.12) * 1.2;
+    var bodyColor = AM.C.ENEMY_TYPES.body;
+    var webColor = AM.C.ENEMY_TYPES.web;
+    var duckColor = AM.C.ENEMY_TYPES.duck;
+    var beakColor = AM.C.ENEMY_TYPES.duckBeak;
+    var eyeColor = AM.C.ENEMY_TYPES.eyes;
+    var outline = AM.C.COLOR_OUTLINE;
 
-    ctx.fillStyle = AM.C.BOSS.jacket;
-    ctx.beginPath();
-    ctx.moveTo(x - 4, y + 1);
-    ctx.lineTo(x + 5, y);
-    ctx.lineTo(x - 4, y + 5);
-    ctx.closePath();
-    ctx.fill();
+    function pxr(x, y, w, h, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(px + (x * s), py + (y * s) + bob, w * s, h * s);
+    }
 
-    ctx.fillStyle = AM.C.ENEMY_TYPES.duckEyes;
-    ctx.beginPath();
-    ctx.arc(x - 2, y - 2, 1.3, 0, Math.PI * 2);
-    ctx.arc(x + 2, y - 2, 1.3, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(x - 3.5, y - 0.7, 2, 1.2);
-    ctx.fillRect(x + 1.5, y - 0.7, 2, 1.2);
+    // Retro spider body.
+    pxr(-10, -2, 12, 5, webColor);
+    pxr(-12, 0, 16, 8, bodyColor);
+    pxr(-11, 7, 14, 4, webColor);
+    pxr(-8, 10, 8, 3, bodyColor);
+
+    // Eyes.
+    pxr(-6, -7, 1, 1, "#fff");
+    pxr(-5, -7, 1, 1, outline);
+    pxr(4, -7, 1, 1, "#fff");
+    pxr(5, -7, 1, 1, outline);
+
+    // Duck beak / face block.
+    pxr(-4, -5, 2, 1, beakColor);
+    pxr(-3, -4, 2, 1, beakColor);
+    pxr(-2, -3, 2, 1, beakColor);
+    pxr(-4, -2, 2, 1, beakColor);
+    pxr(2, -5, 2, 1, duckColor);
+    pxr(3, -4, 2, 1, duckColor);
+    pxr(2, -3, 2, 1, beakColor);
+    pxr(3, -2, 2, 1, duckColor);
+
+    // Duck head cap.
+    pxr(-6, -8, 12, 4, duckColor);
+    pxr(-3, -9, 6, 1, duckColor);
+
+    // Eyes.
+    pxr(-3, -9, 1, 2, eyeColor);
+    pxr(2, -9, 1, 2, eyeColor);
+    pxr(-2, -7, 1, 1, outline);
+    pxr(3, -7, 1, 1, outline);
+
+    // Eight-point legs (classic spread).
+    var sign = facing >= 0 ? 1 : -1;
+    ctx.fillStyle = webColor;
+    for (var p = 0; p < 8; p++) {
+      var a = (p / 8) * Math.PI * 2;
+      var lx = Math.cos(a) * 8;
+      pxr(lx * 0.7 * sign * 0.25, 11 + bob * 0.2, 2, 1, webColor);
+      pxr(lx * 0.75 * sign * 0.25 + sign * 2, 13 + bob * 0.4, 2, 1, webColor);
+    }
   }
 
   function drawMascot(px, py) {
@@ -433,41 +488,9 @@ window.AM = window.AM || {};
       return;
     }
 
-    var bob = Math.sin(Date.now() / 140 + e.x * 0.03) * 2;
-    // classic block-style spider shell
-    var s = 2;
-    function enemyBlock(x, y, w, h, color) {
-      ctx.fillStyle = color;
-      ctx.fillRect((px + x * s - 18), (py + bob + 6 + y * s) - 3, w * s, h * s);
-    }
-
-    enemyBlock(-6, 0, 12, 6, AM.C.ENEMY_TYPES.body);
-    enemyBlock(-5, 6, 10, 2, AM.C.ENEMY_TYPES.web);
-    enemyBlock(-2, -1, 4, 1, AM.C.COLOR_OUTLINE);
-    // spider legs
-    ctx.strokeStyle = AM.C.ENEMY_TYPES.web;
-    ctx.lineWidth = 2;
-    for (var leg = 0; leg < 6; leg++) {
-      var ang = (Math.PI / 6) * leg - Math.PI / 2;
-      var lx1 = Math.cos(ang) * 7;
-      var ly1 = Math.sin(ang) * 4;
-      var lx2 = Math.cos(ang) * 14;
-      var ly2 = Math.sin(ang) * 10;
-      ctx.beginPath();
-      ctx.moveTo(px, py + bob + 6);
-      ctx.quadraticCurveTo(px + lx1, py + bob + 6 + ly1, px + lx2, py + bob + ly2 + 4);
-      ctx.stroke();
-    }
-
-    // Duck head motif.
-    drawDuckHead(px, py + bob - 8);
-
-    // eyes on body
-    ctx.fillStyle = AM.C.ENEMY_TYPES.eyes;
-    ctx.beginPath();
-    ctx.arc(px - 2, py + bob + 4, 1.2, 0, Math.PI * 2);
-    ctx.arc(px + 2, py + bob + 4, 1.2, 0, Math.PI * 2);
-    ctx.fill();
+    var t = Date.now() / 130;
+    var bob = Math.sin(t * 0.85 + e.x * 0.03) * 1.4;
+    drawDuckSpiderSprite(px, py + bob, e.vx, t);
   }
 
   function drawPlayer(p) {
