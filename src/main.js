@@ -29,6 +29,8 @@ window.AM = window.AM || {};
     state.player.vx = 0;
     state.player.vy = 0;
     state.player.facing = 1;
+    state.player.coyoteTime = 0;
+    state.player.jumpBuffer = 0;
     state.player.invuln = 1.2;
     state.player.alive = true;
     state.player.deathTimer = 0;
@@ -101,6 +103,8 @@ window.AM = window.AM || {};
     p.vx = 0;
     p.vy = 0;
     p.onGround = false;
+    p.coyoteTime = 0;
+    p.jumpBuffer = 0;
   }
 
   function killPlayer(reason) {

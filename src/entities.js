@@ -15,6 +15,8 @@ window.AM = window.AM || {};
       vx: 0,
       vy: 0,
       onGround: false,
+      coyoteTime: 0,
+      jumpBuffer: 0,
       facing: 1,
       alive: true,
       invuln: 0,       // seconds of post-hit invulnerability

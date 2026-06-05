@@ -3,14 +3,16 @@ window.AM = window.AM || {};
 
 AM.C = {
   TILE: 32,
-  GRAVITY: 1420,     // px/s^2
-  JUMP_V: -700,      // px/s (negative = up)
-  MAX_FALL: 930,     // terminal velocity
+  GRAVITY: 1320,     // px/s^2
+  JUMP_V: -780,      // px/s (negative = up)
+  MAX_FALL: 900,     // terminal velocity
   RUN_ACCEL: 1250,   // px/s^2
   RUN_DECEL: 1500,   // px/s^2
   RUN_MAX: 250,      // px/s
   AIR_CONTROL: 0.82,  // accel multiplier in air
   STOMP_BOUNCE: -430,
+  COYOTE_TIME: 0.12, // seconds player can still jump after stepping off ledge
+  JUMP_BUFFER: 0.12, // seconds to accept late jump press
   ENEMY_SPEED: 64,
   COIN_SCORE: 1,
   START_LIVES: 3,

@@ -50,6 +50,8 @@ window.AM = window.AM || {};
   function stepPlayer(player, input, dt, solids) {
     player.prevY = player.y;
     player.prevVy = player.vy;
+    player.coyoteTime = player.coyoteTime || 0;
+    player.jumpBuffer = player.jumpBuffer || 0;
 
     // Horizontal acceleration / deceleration
     var accel = AM.C.RUN_ACCEL * (player.onGround ? 1 : AM.C.AIR_CONTROL);
@@ -71,10 +73,19 @@ window.AM = window.AM || {};
     if (player.vx >  AM.C.RUN_MAX) player.vx =  AM.C.RUN_MAX;
     if (player.vx < -AM.C.RUN_MAX) player.vx = -AM.C.RUN_MAX;
 
+    if (input.jumpPressed) {
+      player.jumpBuffer = AM.C.JUMP_BUFFER;
+    }
+    if (player.jumpBuffer > 0) {
+      player.jumpBuffer = Math.max(0, player.jumpBuffer - dt);
+    }
+
     // Jump (press, not hold, handled via input.jumpPressed flag)
-    if (input.jumpPressed && player.onGround) {
+    if (player.jumpBuffer > 0 && (player.onGround || player.coyoteTime > 0)) {
       player.vy = AM.C.JUMP_V;
       player.onGround = false;
+      player.jumpBuffer = 0;
+      player.coyoteTime = 0;
       if (AM.audio && AM.audio.sfx) AM.audio.sfx("jump");
     }
 
@@ -92,8 +103,10 @@ window.AM = window.AM || {};
     if (info.hitBottom) {
       player.onGround = true;
       player.vy = 0;
+      player.coyoteTime = AM.C.COYOTE_TIME;
     } else {
       player.onGround = false;
+      player.coyoteTime = Math.max(0, player.coyoteTime - dt);
     }
     if (info.hitTop)    player.vy = 0;
     if (info.hitLeft)   player.vx = 0;
